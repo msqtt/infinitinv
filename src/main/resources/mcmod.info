@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "infinitinv",
+    "name": "Infinite Inventory",
+    "description": "An unbounded, searchable, sortable and paginated item store that replaces the 27 main inventory slots. The armour, offhand, hotbar and crafting area stay exactly as vanilla.",
+    "version": "1.0.0",
+    "mcversion": "1.12.2",
+    "url": "",
+    "authorList": [
+      "Hermes Agent"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "parent": "",
+    "useDependencyInformation": false
+  }
+]

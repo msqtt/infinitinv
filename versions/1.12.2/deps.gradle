@@ -1,0 +1,11 @@
+dependencies {
+	// 1.12.2 needs the legacy Mixin 0.8 API, which Forge does not bundle.
+	// MixinBooter loads org.spongepowered.asm.mixin into the FML classloader.
+	implementation("zone.rong:mixinbooter:10.6")
+	compileOnly("org.spongepowered:mixin:0.8.5")
+	// NOTE: the Mixin annotation processor is deliberately NOT used here.
+	// Unimined remaps the mixin targets and builds the refmap itself during
+	// its jar remap task; running the stock AP as well makes it fail with
+	// "Unable to locate obfuscation mapping for @Inject target ...".
+	runtimeOnly("org.jetbrains:intellij-fernflower:1.2.1.16")
+}
