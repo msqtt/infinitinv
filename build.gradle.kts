@@ -52,10 +52,12 @@ unimined.minecraft {
 }
 
 java {
-	// 1.12.2 runs on Java 8; 1.17+ needs Java 17.
+	// 1.12.2 runs on Java 8, 1.17-1.20 on Java 17 and 1.21+ on Java 21.
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(
-			if (stonecutter.eval(stonecutter.current.version, ">=1.17")) 17 else 8
+			if (stonecutter.eval(stonecutter.current.version, ">=1.21")) 21
+			else if (stonecutter.eval(stonecutter.current.version, ">=1.17")) 17
+			else 8
 		)
 	}
 }
@@ -77,3 +79,4 @@ if (stonecutter.current.version !in readyVersions) {
         enabled = false
     }
 }
+

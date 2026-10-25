@@ -1,0 +1,9 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="infinitinv"
+version="1.0.0"
+displayName="Infinite Inventory"
+description=

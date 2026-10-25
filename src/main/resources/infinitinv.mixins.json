@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "com.infinitinv.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "infinitinv.refmap.json",
+  "mixins": [
+    "PlayerMixin",
+    "InventoryMenuMixin"
+  ],
+  "client": [
+    "InventoryScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
