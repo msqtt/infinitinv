@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Adds a page indicator and two page buttons to the vanilla inventory
@@ -65,7 +66,7 @@ public abstract class InventoryScreenMixin {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void infinitinv$clickPageButton(double mouseX, double mouseY, int button,
-                                             CallbackInfo ci) {
+                                             CallbackInfoReturnable<Boolean> ci) {
         if (button != 0) {
             return;
         }

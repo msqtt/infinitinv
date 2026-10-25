@@ -3,6 +3,17 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.4] - 2026-10-25
+
+### Fixed
+- The page button handler now uses `CallbackInfoReturnable<Boolean>`.
+  `mouseClicked` returns a boolean, and Mixin requires a
+  `CallbackInfoReturnable` for a target that returns a value - with a plain
+  `CallbackInfo` the client aborted with *"Invalid descriptor ...
+  CallbackInfoReturnable is required!"*.
+- `tools/check_mixin_targets.py` also verifies that the callback type
+  matches the return type of the target.
+
 ## [1.2.3] - 2026-10-25
 
 ### Fixed
