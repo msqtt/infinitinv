@@ -2,6 +2,8 @@
 package com.infinitinv.client;
 
 import com.infinitinv.client.gui.StoreScreen;
+import com.infinitinv.network.ActionMessage;
+import com.infinitinv.network.InfinitInvNet;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,6 +25,10 @@ public class ClientTick {
             return;
         }
         while (ClientKeys.OPEN_KEY.consumeClick()) {
+            // Ask the server for the current state first, so the screen
+            // never shows an outdated or empty mirror.
+            InfinitInvNet.toServer(new ActionMessage(
+                ActionMessage.Action.REQUEST_SYNC, 0, "", null));
             mc.setScreen(new StoreScreen(mc.player));
         }
     }

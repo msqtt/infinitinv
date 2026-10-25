@@ -29,7 +29,9 @@ public class ActionMessage {
         /** Insert the given stack into the store. */
         INSERT,
         /** Remove one item from the given absolute index. */
-        REMOVE
+        REMOVE,
+        /** Ask the server for a fresh snapshot of the store. */
+        REQUEST_SYNC
     }
 
     private Action action = Action.SET_PAGE;
@@ -115,9 +117,13 @@ public class ActionMessage {
                 }
                 break;
             }
+            case REQUEST_SYNC:
+                break;
             default:
                 break;
         }
+        // Every action ends with a fresh snapshot, so the client mirror
+        // always matches the server state.
         InfinitInvNet.sendSnapshotTo(player);
     }
 }

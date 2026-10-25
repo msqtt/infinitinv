@@ -5,15 +5,15 @@ issueTrackerURL="https://github.com/msqtt/infinitinv/issues"
 
 [[mods]]
 modId="infinitinv"
-version="1.2.0"
+version="1.2.1"
 displayName="Infinite Inventory"
 authors="msqtt"
-description=
+description="Replaces the 27 main inventory slots with an unbounded, searchable, sortable and paginated item store. The armour slots, the offhand, the hotbar and the crafting area keep their exact vanilla layout and behaviour. Open the store with the inventory screen (E) or the dedicated infinite inventory screen (K by default, rebindable in the key bindings). The store is server authoritative and persisted in the player data, so it survives death, logout and restarts."
 
 [[dependencies.infinitinv]]
 modId="forge"
 mandatory=true
-versionRange="[47,)"
+versionRange="[52,)"
 ordering="NONE"
 side="BOTH"
 

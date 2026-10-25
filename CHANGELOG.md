@@ -3,6 +3,25 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.1] - 2026-10-25
+
+### Fixed
+- `mods.toml` had an empty `description`, which made nightconfig abort the
+  mod scan with *"Invalid value containing only whitespaces"*. The mod
+  could not be loaded at all on 1.20.1 and 1.21.1.
+- The `MixinConfigs` manifest attribute pointed at a file that was not in
+  the jar for the modern versions, and the shared mixin config listed the
+  modern mixin class names in the 1.12.2 jar. Each version now ships the
+  mixin config that matches its own mixin classes, and the manifest
+  attribute points at a file that really exists.
+- The store snapshot is now pushed to the client when the player joins, so
+  the 27 main slots are not empty until the player performs an action.
+- The channel is registered in the mod constructor instead of a late setup
+  event.
+- Only the server migrates the vanilla 27 slots into the store; the client
+  mirror is filled from the server snapshot instead.
+- The client asks for a fresh snapshot when the store screen is opened.
+
 ## [1.2.0] - 2026-10-25
 
 ### Added

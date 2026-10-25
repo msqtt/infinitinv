@@ -60,7 +60,11 @@ public abstract class PlayerMixin implements IExtendedStorageHolder {
         // items are not stranded once the slots are re-purposed.
         if (!infinitinv$migrated) {
             infinitinv$migrated = true;
-            migrateVanillaInventory();
+            // Only the server owns the real items; the client mirror is
+            // filled from the server snapshot instead.
+            if (self instanceof net.minecraft.server.level.ServerPlayer) {
+                migrateVanillaInventory();
+            }
         }
     }
 

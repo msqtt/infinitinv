@@ -48,6 +48,7 @@ public abstract class PlayerMixin implements IExtendedStorageHolder {
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void infinitinv$readStorage(CompoundTag compound, CallbackInfo ci) {
+        Player self = (Player) (Object) this;
         if (compound.contains(KEY_STORAGE, net.minecraft.nbt.Tag.TAG_COMPOUND)) {
             StorageIO.read(infinitinv$getExtendedStorage(), compound.getCompound(KEY_STORAGE));
         }
@@ -58,7 +59,11 @@ public abstract class PlayerMixin implements IExtendedStorageHolder {
         // items are not stranded once the slots are re-purposed.
         if (!infinitinv$migrated) {
             infinitinv$migrated = true;
-            migrateVanillaInventory();
+            // Only the server owns the real items; the client mirror is
+            // filled from the server snapshot instead.
+            if (self instanceof net.minecraft.server.level.ServerPlayer) {
+                migrateVanillaInventory();
+            }
         }
     }
 

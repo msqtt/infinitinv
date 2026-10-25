@@ -47,7 +47,13 @@ unimined.minecraft {
 
 	minecraftForge {
 		loader(property("forgeVersion").toString())
-		mixinConfig("mixins.infinitinv.json")
+		// 1.12.2 lets Unimined generate the config and its refmap, the
+		// modern versions ship the config themselves so that the refmap
+		// matches their mixin class names.
+		mixinConfig(
+			if (stonecutter.eval(stonecutter.current.version, ">=1.17")) "infinitinv.mixins.json"
+			else "mixins.infinitinv.json"
+		)
 	}
 }
 
