@@ -1,9 +1,25 @@
 modLoader="javafml"
-loaderVersion="[47,)"
+loaderVersion="[52,)"
 license="MIT"
+issueTrackerURL="https://github.com/msqtt/infinitinv/issues"
 
 [[mods]]
 modId="infinitinv"
-version="1.0.0"
+version="1.2.0"
 displayName="Infinite Inventory"
+authors="msqtt"
 description=
+
+[[dependencies.infinitinv]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.infinitinv]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21.1,1.22)"
+ordering="NONE"
+side="BOTH"

@@ -55,3 +55,31 @@ and a completely different screen API (`AbstractContainerScreen` with
 The storage, slot and network logic port over almost unchanged, but the GUI
 has to be written a second time. The scaffold is in place
 (`versions/1.20.1/`), so the remaining work is the code port.
+
+
+## 1.21.1 (Forge 52.0.28)
+
+The 1.21 port could not reuse the 1.20.1 code: Forge's networking layer was
+replaced by the payload API and the item NBT format was replaced by data
+components. The port therefore lives in its own version directory,
+`versions/1.21.1/src/main/java`, with the same design as the 1.20.1 one.
+
+| Concern | 1.20.1 | 1.21.1 |
+|---|---|---|
+| Item stack type | `net.minecraft.world.item.ItemStack` | same |
+| Item serialisation | `stack.save(new CompoundTag())` / `ItemStack.of(tag)` | `stack.save(provider, tag)` / `ItemStack.parseOptional(provider, tag)` - needs a `HolderLookup.Provider` |
+| Data components | plain NBT | `stack.getComponentsPatch().isEmpty()` instead of `stack.getTag() == null` |
+| `ListTag` | `list.add(tag)` appends | `list.add(list.size(), tag)` - the int is an insert index |
+| Channel creation | `NetworkRegistry.newSimpleChannel(...)` | `ChannelBuilder.named(...).networkProtocolVersion(1).simpleChannel()` |
+| Channel class | `net.minecraftforge.network.simple.SimpleChannel` | `net.minecraftforge.network.SimpleChannel` |
+| Message registration | `messageBuilder(cls, id)` | `messageBuilder(cls)` - the id is assigned by Forge |
+| Handler | `consumerMainThread(Supplier<NetworkEvent.Context>)` | `consumer(BiConsumer<MSG, CustomPayloadEvent.Context>)` - the context is passed directly |
+| Direction check | `ctx.get().getDirection() == PLAY_TO_CLIENT` | `ctx.isClientSide()` / `ctx.isServerSide()` |
+| Server -> client | `send(PacketTarget, msg)` | `send(msg, PacketTarget)` - the argument order is swapped |
+| Client -> server | `sendToServer(msg)` | `send(msg, PacketDistributor.SERVER.noArg())` |
+| `ResourceLocation` | `new ResourceLocation("infinitinv")` | `ResourceLocation.parse("infinitinv")` |
+| Java | 17 | 21 |
+
+Because 1.21.1 runs on Mojang mappings at runtime, no refmap has to be
+remapped; a placeholder `infinitinv.refmap.json` keeps the mixin config
+valid.

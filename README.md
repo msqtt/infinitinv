@@ -9,8 +9,10 @@ The armour slots, the offhand, the hotbar and the crafting area are
 **completely untouched** — they keep their exact vanilla look and behaviour.
 
 ![Minecraft 1.12.2](https://img.shields.io/badge/Minecraft-1.12.2-c78b25)
-![Forge](https://img.shields.io/badge/Forge-14.23.5.2860-1e6e2d)
-![Java](https://img.shields.io/badge/Java-8-5382a4)
+![Minecraft 1.20.1](https://img.shields.io/badge/Minecraft-1.20.1-c78b25)
+![Minecraft 1.21.1](https://img.shields.io/badge/Minecraft-1.21.1-c78b25)
+![Forge](https://img.shields.io/badge/Forge-14.23.5.2860%20%2F%2047.3.0%20%2F%2052.0.28-1e6e2d)
+![Java](https://img.shields.io/badge/Java-8%20%2F%2017%20%2F%2021-5382a4)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
 ---
@@ -45,8 +47,14 @@ The armour slots, the offhand, the hotbar and the crafting area are
 
 ## Installation
 
-1. Install **Forge 14.23.5.2860** or newer for Minecraft 1.12.2.
-2. Drop `infinitinv-1.12.2.jar` into your `mods/` folder.
+| Minecraft | Forge | Jar |
+|---|---|---|
+| 1.12.2 | 14.23.5.2860 | `infinitinv-1.12.2.jar` |
+| 1.20.1 | 47.3.0 | `infinitinv-1.20.1.jar` |
+| 1.21.1 | 52.0.28 | `infinitinv-1.21.1.jar` |
+
+1. Install the matching Forge version.
+2. Drop the matching `infinitinv-<mcversion>.jar` into your `mods/` folder.
 3. Launch the game. The hotbar and armour keep working exactly as before.
 
 ## Building from source
@@ -55,43 +63,52 @@ The project uses [Gradle](https://gradle.org) with a wrapper, so no local
 Gradle install is needed:
 
     ./gradlew :1.12.2:build
+    ./gradlew :1.20.1:build
+    ./gradlew :1.21.1:build
 
-The result is `versions/1.12.2/build/libs/1.12.2.jar`.
+The result is `versions/<mcversion>/build/libs/<mcversion>.jar`.
 
-Requirements: a JDK to drive Gradle (17+) and a **JDK 8** as the compile
-toolchain for the 1.12.2 target. Gradle finds it through
+Requirements: a JDK to drive Gradle (17+) and a **JDK 8**, **JDK 17** and
+**JDK 21** as the compile toolchains for the 1.12.2, 1.20.1 and 1.21.1
+targets. Gradle finds it through
 `org.gradle.java.installations.paths` in `gradle.properties`; point that at
 your own JDK 8 if you are not on NixOS:
 
-    ./gradlew :1.12.2:build \
-      -Dorg.gradle.java.installations.paths=/path/to/jdk8,/path/to/jdk17
+    ./gradlew :1.21.1:build \
+      -Dorg.gradle.java.installations.paths=/path/to/jdk8,/path/to/jdk17,/path/to/jdk21
 
 On NixOS the whole toolchain is provided by the system configuration:
 
 ```nix
-users.users.bob.packages = with pkgs; [ openjdk8 openjdk17 gradle ];
+users.users.bob.packages = with pkgs; [ openjdk8 openjdk17 openjdk21 gradle ];
 ```
 
 ## Multi version
 
 The project is built with [Stonecutter](https://github.com/kikugie/stonecutter)
 and [Unimined](https://github.com/unimined/Unimined), so several Minecraft
-versions can share one source tree. `1.12.2` is ported and built by default;
-see [PORTING.md](PORTING.md) for what another version needs and for a table
-of the API differences between version families.
+versions can share one source tree. `1.12.2`, `1.20.1` and `1.21.1` are
+ported and built by default; see [PORTING.md](PORTING.md) for what another
+version needs and for a table of the API differences between version
+families.
 
-`gradle.properties` holds `readyVersions=1.12.2` — only the versions listed
-there are compiled by `./gradlew build`, the other version directories are
-kept in the tree so the porting work stays visible.
+`gradle.properties` holds `readyVersions=1.12.2,1.20.1,1.21.1` — only the
+versions listed there are compiled by `./gradlew build`, the other version
+directories are kept in the tree so the porting work stays visible.
+
+The 1.12.2 port lives in `versions/1.12.2/src/main/java`, the 1.20.1 port
+in `versions/1.20.1/src/main/java` and the 1.21.1 port in
+`versions/1.21.1/src/main/java`. The two modern ports share the same
+design but use their own API calls, because Forge's networking layer
+changed completely in 1.21.
 
 ## Layout
 
 ```
-src/main/java/com/infinitinv/
+versions/1.12.2/src/main/java/com/infinitinv/
   InfiniteInv.java              the @Mod entry point
   storage/ExtendedStorage.java  the unbounded store: filter, sort, paging
   storage/StorageIO.java        NBT (de)serialisation
-  storage/IExtendedStorageHolder.java
   slot/ExtendedSlot.java        a vanilla Slot backed by the store
   mixin/PlayerMixin.java        attaches + persists the store
   mixin/ContainerPlayerMixin.java   swaps the 27 main slots
@@ -99,7 +116,9 @@ src/main/java/com/infinitinv/
   network/                      sync snapshot + action messages
   client/ClientHooks.java       key binding
   client/gui/GuiInfiniteInventory.java  the store screen
-versions/                       per-version Gradle properties and deps
+versions/1.20.1/src/main/java/com/infinitinv/   same design, modern API
+versions/1.21.1/src/main/java/com/infinitinv/   same design, 1.21 API
+versions/<mcversion>/           per-version Gradle properties and deps
 ```
 
 ## How it works
@@ -119,6 +138,12 @@ versions/                       per-version Gradle properties and deps
 * Unimined remaps the mixin targets and builds the refmap itself during
   `remapJar`, so the stock Mixin annotation processor is deliberately not
   used.
+* The 1.20.1 port uses `net.minecraft.world.item.ItemStack`,
+  `net.minecraft.nbt.CompoundTag` and the `SimpleChannel` networking of
+  Forge 47. The 1.21.1 port uses the data-component item serialisation
+  (`ItemStack.save(provider, tag)`), `ChannelBuilder` and the
+  `CustomPayloadEvent` based networking of Forge 52 — the payload API
+  replaced the old `IMessage` handler there.
 
 ## License
 

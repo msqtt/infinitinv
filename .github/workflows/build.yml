@@ -9,11 +9,27 @@ on:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: "1.12.2"
+            artifact: infinitinv-1.12.2
+            path: versions/1.12.2/build/libs/1.12.2.jar
+          - version: "1.20.1"
+            artifact: infinitinv-1.20.1
+            path: versions/1.20.1/build/libs/1.20.1.jar
+          - version: "1.21.1"
+            artifact: infinitinv-1.21.1
+            path: versions/1.21.1/build/libs/1.21.1.jar
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 8 (toolchain for the 1.12.2 target)
+      # 1.12.2 needs a JDK 8 toolchain, 1.17-1.20 a JDK 17 one and 1.21+ a
+      # JDK 21 one. All three are installed so the Gradle toolchain
+      # resolver can pick the right one per version.
+      - name: Set up JDK 8
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -21,22 +37,32 @@ jobs:
       - id: jdk8
         run: echo "path=$JAVA_HOME" >> "$GITHUB_OUTPUT"
 
-      - name: Set up JDK 17 (drives Gradle, target for 1.17+)
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+      - id: jdk17
+        run: echo "path=$JAVA_HOME" >> "$GITHUB_OUTPUT"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - id: jdk21
+        run: echo "path=$JAVA_HOME" >> "$GITHUB_OUTPUT"
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Build
+      - name: Build ${{ matrix.version }}
         run: |
-          ./gradlew :1.12.2:build \
-            -Porg.gradle.java.installations.paths="${{ steps.jdk8.outputs.path }},$JAVA_HOME"
+          ./gradlew :${{ matrix.version }}:build \
+            -Porg.gradle.java.installations.paths="${{ steps.jdk8.outputs.path }},${{ steps.jdk17.outputs.path }},${{ steps.jdk21.outputs.path }}"
 
       - name: Upload the mod
         uses: actions/upload-artifact@v4
         with:
-          name: infinitinv-1.12.2
-          path: versions/1.12.2/build/libs/1.12.2.jar
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.path }}
           if-no-files-found: error

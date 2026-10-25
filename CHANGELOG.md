@@ -3,6 +3,24 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.0] - 2026-10-25
+
+### Added
+- Minecraft 1.21.1 support (Forge 52.0.28): the port uses the data
+  component item serialisation, `ChannelBuilder` and the
+  `CustomPayloadEvent` based networking of the 1.21 payload API.
+- The build now produces all three versions at once, and the CI workflow
+  builds them in a matrix with a JDK 8, 17 and 21 toolchain each.
+- Complete `mods.toml` metadata with the supported Minecraft and Forge
+  version ranges.
+
+## [1.1.0] - 2026-10-25
+
+### Added
+- Minecraft 1.20.1 support (Forge 47.3.0): the modern API port of the mod
+  with `net.minecraft.world.item` classes, `GuiGraphics` based rendering
+  and Forge `SimpleChannel` networking.
+
 ## [1.0.0] - 2026-10-24
 
 ### Added
