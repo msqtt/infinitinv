@@ -3,6 +3,16 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.2] - 2026-10-25
+
+### Fixed
+- The vanilla inventory screen mixin no longer shadows `leftPos`/`topPos`
+  from `AbstractContainerScreen`. The refmap only carries the method
+  mappings, so the field was renamed by the obfuscation mapping at runtime
+  and could not be found in the target class, which aborted the client with
+  *"Mixin apply failed ... @Shadow field f_97735_ was not located"*. The
+  panel origin is now derived from the window size instead.
+
 ## [1.2.1] - 2026-10-25
 
 ### Fixed

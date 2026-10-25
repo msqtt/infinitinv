@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -19,20 +18,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  *
  * <p>Nothing else about the screen is changed: the armour slots, the
  * crafting area and the hotbar look exactly as they always did.
+ *
+ * <p>The panel origin is derived from the window size instead of being
+ * shadowed from {@code AbstractContainerScreen}: a shadowed inherited field
+ * does not resolve at runtime, because the refmap only carries the method
+ * mappings and the field is renamed by the obfuscation mapping.
  */
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin {
 
-    @Shadow
-    protected int leftPos;
-
-    @Shadow
-    protected int topPos;
+    /** Size of the vanilla player inventory panel. */
+    private static final int PANEL_WIDTH = 176;
+    private static final int PANEL_HEIGHT = 166;
 
     @Inject(method = "renderLabels", at = @At("TAIL"))
     private void infinitinv$drawPageInfo(GuiGraphics graphics, int mouseX, int mouseY,
                                          CallbackInfo ci) {
-        LocalPlayer player = net.minecraft.client.Minecraft.getInstance().player;
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        LocalPlayer player = mc.player;
         if (player == null || !(player instanceof IExtendedStorageHolder)) {
             return;
         }
@@ -42,15 +45,17 @@ public abstract class InventoryScreenMixin {
             return;
         }
         String text = (store.getPage() + 1) + "/" + store.pageCount();
-        // The coordinates inside this method are relative to the panel origin.
-        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-        graphics.drawString(mc.font, text, 150 - mc.font.width(text), 74, 0x404040);
+        // renderLabels runs inside the translated panel, so these coordinates
+        // are relative to the top left corner of the inventory panel.
+        graphics.drawString(mc.font, text,
+            PANEL_WIDTH - 26 - mc.font.width(text), 74, 0x404040);
     }
 
     @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
     private void infinitinv$scrollPage(double mouseX, double mouseY, double delta,
                                        CallbackInfo ci) {
-        LocalPlayer player = net.minecraft.client.Minecraft.getInstance().player;
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        LocalPlayer player = mc.player;
         if (player == null || !(player instanceof IExtendedStorageHolder)) {
             return;
         }
@@ -59,10 +64,12 @@ public abstract class InventoryScreenMixin {
         if (store.size() == 0 || delta == 0) {
             return;
         }
-        InventoryScreen self = (InventoryScreen) (Object) this;
+        // The panel is centred on the screen.
+        int leftPos = (mc.getWindow().getGuiScaledWidth() - PANEL_WIDTH) / 2;
+        int topPos = (mc.getWindow().getGuiScaledHeight() - PANEL_HEIGHT) / 2;
         // The main inventory grid occupies this area of the panel.
-        double gx = mouseX - this.leftPos;
-        double gy = mouseY - this.topPos;
+        double gx = mouseX - leftPos;
+        double gy = mouseY - topPos;
         if (gx < 8 || gx > 152 || gy < 84 || gy > 137) {
             return;
         }
@@ -71,8 +78,7 @@ public abstract class InventoryScreenMixin {
             return;
         }
         InfinitInvNet.toServer(new ActionMessage(
-            ActionMessage.Action.SET_PAGE, target, "", null,
-            player.level().registryAccess()));
+            ActionMessage.Action.SET_PAGE, target, "", null, mc.player.level().registryAccess()));
         ci.cancel();
     }
 }
