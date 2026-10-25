@@ -3,6 +3,19 @@
 All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.3] - 2026-10-25
+
+### Fixed
+- The vanilla inventory screen no longer injects into `mouseScrolled`. That
+  method comes from the `GuiEventListener` interface, and the refmap records
+  the mixin target as the owner of every injected method, so the lookup
+  failed at runtime with *"could not find any targets matching"*. The page
+  buttons of the inventory screen now use `mouseClicked`, which
+  `InventoryScreen` declares itself.
+- Added `tools/check_mixin_targets.py`, a static check that every mixin
+  injection targets a method the mixin target declares, and wired it into
+  the CI workflow.
+
 ## [1.2.2] - 2026-10-25
 
 ### Fixed
